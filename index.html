@@ -63,8 +63,14 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            gap: 30px;
             margin-top: 40px;
+        }
+
+        .gift-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .gift-box {
@@ -94,11 +100,26 @@
         }
 
         .gift-label {
-            font-size: 16px;
-            margin-top: 10px;
+            font-size: 22px;
+            margin-top: 5px;
             font-weight: bold;
             color: white;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .stars-row {
+            margin-top: 10px;
+            font-size: 20px;
+            display: flex;
+            gap: 2px;
+        }
+
+        .star.lit {
+            color: #ffcc5c;
+        }
+
+        .star.unlit {
+            color: #ccc;
         }
 
         /* Practice Page Styles */
@@ -106,6 +127,20 @@
             display: none;
             flex-direction: column;
             align-items: center;
+        }
+
+        .parent-instruction {
+            background-color: #fff;
+            border-left: 5px solid var(--btn-blue);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            max-width: 600px;
+            margin: 10px auto 20px;
+            color: #555;
+            line-height: 1.5;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .content-area {
@@ -224,6 +259,10 @@
         <div id="practice-page">
             <h2 id="stage-title">單字</h2>
             
+            <div class="parent-instruction">
+                💡 <strong>家長提示：</strong>如在提示下，兒童仍未能正確讀出目標字眼，則按「回到主頁」離開，繼續練習其他字詞。
+            </div>
+            
             <div class="content-area">
                 <img id="target-image" class="target-image" src="" alt="圖片">
                 <div id="target-text" class="target-text">跑</div>
@@ -304,8 +343,8 @@
         let currentStageIndex = 0;
         let currentTicks = 0;
         
-        // Track completion status of the 5 words (true/false)
-        let completedWords = [false, false, false, false, false];
+        // Track the number of stars (0 to 5) collected for each of the 5 words
+        let wordStars = [0, 0, 0, 0, 0];
 
         // Initialize Home Page
         function initHome() {
@@ -313,16 +352,38 @@
             homePage.innerHTML = '';
             
             data.forEach((word, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'gift-wrapper';
+
+                const isCompleted = wordStars[index] === 5;
+                
                 const box = document.createElement('div');
-                box.className = `gift-box ${completedWords[index] ? 'completed' : ''}`;
-                box.innerHTML = `🎁<div class="gift-label">字 ${index + 1}</div>`;
+                box.className = `gift-box ${isCompleted ? 'completed' : ''}`;
+                // Mod 1: Display the target word name instead of generic label
+                box.innerHTML = `🎁<div class="gift-label">${word.name}</div>`;
                 
                 box.onclick = () => {
-                    if (!completedWords[index]) {
+                    if (!isCompleted) {
                         startPractice(index);
                     }
                 };
-                homePage.appendChild(box);
+                
+                // Mod 2: Generate 5 stars under the box based on level progression
+                const starsRow = document.createElement('div');
+                starsRow.className = 'stars-row';
+                let starsHTML = '';
+                for (let i = 0; i < 5; i++) {
+                    if (i < wordStars[index]) {
+                        starsHTML += '<span class="star lit">⭐</span>';
+                    } else {
+                        starsHTML += '<span class="star unlit">☆</span>';
+                    }
+                }
+                starsRow.innerHTML = starsHTML;
+
+                wrapper.appendChild(box);
+                wrapper.appendChild(starsRow);
+                homePage.appendChild(wrapper);
             });
         }
 
@@ -363,13 +424,12 @@
         }
 
         function addTick(index) {
-            // Only allow clicking the next available grey tick
             if (index === currentTicks) {
                 const ticks = document.querySelectorAll('.tick');
                 ticks[index].classList.add('active');
                 currentTicks++;
 
-                // If 3 ticks collected
+                // If 3 ticks collected, successfully complete this level
                 if (currentTicks === 3) {
                     setTimeout(() => {
                         handleLevelComplete();
@@ -385,14 +445,18 @@
         }
 
         function handleLevelComplete() {
+            // Update the star record for this word if the newly completed stage gives a new max star
+            if (currentStageIndex + 1 > wordStars[currentWordIndex]) {
+                wordStars[currentWordIndex] = currentStageIndex + 1;
+            }
+
             if (currentStageIndex < 4) {
                 // Move to next stage
                 currentStageIndex++;
                 updateStageView();
             } else {
-                // Word fully completed
+                // Word fully completed (All 5 levels done)
                 alert("太叻啦！完成所有難度！");
-                completedWords[currentWordIndex] = true;
                 goHome();
             }
         }
@@ -407,10 +471,10 @@
         // Web Speech API for TTS
         function speak(text) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Cancel previous speech
+                window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'zh-HK'; // Cantonese
-                utterance.rate = 0.8; // Slightly slower for kids
+                utterance.lang = 'zh-HK'; 
+                utterance.rate = 0.8; 
                 window.speechSynthesis.speak(utterance);
             } else {
                 alert("你的瀏覽器不支援語音功能。");
@@ -426,7 +490,6 @@
             speak("記得要噴多啲氣");
         }
 
-        // Initialize application on load
         window.onload = initHome;
     </script>
 </body>
