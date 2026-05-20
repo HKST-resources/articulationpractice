@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>言語治療發音練習 - /p/ 趴趴音</title>
+    <style>
+        :root {
+            --primary-bg: #f8f9fa;
+            --header-gradient: linear-gradient(90deg, #fff3b0 0%, #ffb3ff 100%);
+            --btn-yellow: #ffcc5c;
+            --btn-blue: #5bc0eb;
+            --btn-green: #9bc53d;
+            --btn-gray: #dcdcdc;
+            --text-dark: #333;
+        }
+
+        body {
+            margin: 0;
+            font-family: '芫茜體', 'YuenSyu', 'Comic Sans MS', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-dark);
+            text-align: center;
+            user-select: none;
+        }
+
+        header {
+            background: var(--header-gradient);
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .back-home {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: normal;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .back-home img {
+            width: 24px;
+            margin-right: 5px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Home Page Styles */
+        #home-page {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .gift-box {
+            width: 120px;
+            height: 120px;
+            background-color: #ff9a9e;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            font-size: 50px;
+        }
+
+        .gift-box:hover:not(.completed) {
+            transform: scale(1.05);
+        }
+
+        .gift-box.completed {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+            opacity: 0.6;
+            filter: grayscale(100%);
+        }
+
+        .gift-label {
+            font-size: 16px;
+            margin-top: 10px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Practice Page Styles */
+        #practice-page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px 0;
+            gap: 30px;
+        }
+
+        .target-image {
+            max-width: 250px;
+            max-height: 250px;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+
+        .target-text {
+            font-size: 60px;
+            font-weight: bold;
+            max-width: 400px;
+        }
+
+        .speaker-btn {
+            background-color: var(--btn-blue);
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 35px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            margin: 10px auto 30px;
+        }
+
+        .speaker-btn:active {
+            transform: scale(0.95);
+        }
+
+        .ticks-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .tick {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--btn-gray);
+            border: 4px solid #aaa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tick.active {
+            background-color: #4CAF50;
+            border-color: #388E3C;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: inherit;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-cue { background-color: var(--btn-yellow); }
+        .btn-prev { background-color: var(--btn-blue); color: white; }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="back-home hidden" id="back-home-btn" onclick="goHome()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 8 8 12 12 16"></polyline>
+                <line x1="16" y1="12" x2="8" y2="12"></line>
+            </svg>
+            回到主頁
+        </div>
+        言語治療發音練習 - /p/ 趴趴音
+    </header>
+
+    <div class="container">
+        <div id="home-page">
+            </div>
+
+        <div id="practice-page">
+            <h2 id="stage-title">單字</h2>
+            
+            <div class="content-area">
+                <img id="target-image" class="target-image" src="" alt="圖片">
+                <div id="target-text" class="target-text">跑</div>
+            </div>
+
+            <div class="speaker-btn" onclick="playAudio()">🔊</div>
+
+            <div class="ticks-container" id="ticks-container">
+                <div class="tick" onclick="addTick(0)">✔️</div>
+                <div class="tick" onclick="addTick(1)">✔️</div>
+                <div class="tick" onclick="addTick(2)">✔️</div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-cue" onclick="playCue()">💡 聽提示</button>
+                <button class="btn btn-prev" id="btn-prev" onclick="prevStage()">🔄 回到上一關</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseURL = "https://raw.githubusercontent.com/HKST-resources/articulationpractice/0ff0a982489b75427eac87c29f5bfe563c09306b/ph-image/";
+        
+        const data = [
+            {
+                name: "跑",
+                stages: [
+                    { type: "單字", text: "跑", img: "1a.png" },
+                    { type: "詞語", text: "跑步", img: "1a.png" },
+                    { type: "短語", text: "我跑步", img: "1a.png" },
+                    { type: "句子", text: "我去公園跑步", img: "1d.png" },
+                    { type: "2句句子", text: "我去公園跑步，然後返屋企。", img: "1e.png" }
+                ]
+            },
+            {
+                name: "被",
+                stages: [
+                    { type: "單字", text: "被", img: "2a.png" },
+                    { type: "詞語", text: "蓋被", img: "2a.png" },
+                    { type: "短語", text: "我蓋被", img: "2a.png" },
+                    { type: "句子", text: "我蓋被瞓覺", img: "2a.png" },
+                    { type: "2句句子", text: "我講晚安，然後蓋被瞓覺。", img: "2e.png" }
+                ]
+            },
+            {
+                name: "拋",
+                stages: [
+                    { type: "單字", text: "拋", img: "3a.png" },
+                    { type: "詞語", text: "拋波", img: "3b.png" },
+                    { type: "短語", text: "我拋波", img: "3b.png" },
+                    { type: "句子", text: "我拋波俾爸爸", img: "3d.png" },
+                    { type: "2句句子", text: "我拋波俾爸爸，爸爸又拋俾我。", img: "3d.png" }
+                ]
+            },
+            {
+                name: "牌",
+                stages: [
+                    { type: "單字", text: "牌", img: "4a.png" },
+                    { type: "詞語", text: "名牌", img: "4a.png" },
+                    { type: "短語", text: "夾名牌", img: "4c.png" },
+                    { type: "句子", text: "我夾名牌喺校服", img: "4c.png" },
+                    { type: "2句句子", text: "我夾名牌喺校服，然後去學英文。", img: "4e.png" }
+                ]
+            },
+            {
+                name: "朋",
+                stages: [
+                    { type: "單字", text: "朋", img: "5a.png" },
+                    { type: "詞語", text: "朋友", img: "5a.png" },
+                    { type: "短語", text: "好朋友", img: "5a.png" },
+                    { type: "句子", text: "我有一個好朋友", img: "5a.png" },
+                    { type: "2句句子", text: "我有一個好朋友，佢會去公園玩。", img: "5e.png" }
+                ]
+            }
+        ];
+
+        let currentWordIndex = -1;
+        let currentStageIndex = 0;
+        let currentTicks = 0;
+        
+        // Track completion status of the 5 words (true/false)
+        let completedWords = [false, false, false, false, false];
+
+        // Initialize Home Page
+        function initHome() {
+            const homePage = document.getElementById('home-page');
+            homePage.innerHTML = '';
+            
+            data.forEach((word, index) => {
+                const box = document.createElement('div');
+                box.className = `gift-box ${completedWords[index] ? 'completed' : ''}`;
+                box.innerHTML = `🎁<div class="gift-label">字 ${index + 1}</div>`;
+                
+                box.onclick = () => {
+                    if (!completedWords[index]) {
+                        startPractice(index);
+                    }
+                };
+                homePage.appendChild(box);
+            });
+        }
+
+        function goHome() {
+            document.getElementById('home-page').style.display = 'flex';
+            document.getElementById('practice-page').style.display = 'none';
+            document.getElementById('back-home-btn').classList.add('hidden');
+            initHome();
+        }
+
+        function startPractice(wordIndex) {
+            currentWordIndex = wordIndex;
+            currentStageIndex = 0;
+            
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('practice-page').style.display = 'flex';
+            document.getElementById('back-home-btn').classList.remove('hidden');
+            
+            updateStageView();
+        }
+
+        function updateStageView() {
+            const stageData = data[currentWordIndex].stages[currentStageIndex];
+            
+            document.getElementById('stage-title').innerText = `第 ${currentStageIndex + 1} 關: ${stageData.type}`;
+            document.getElementById('target-text').innerText = stageData.text;
+            document.getElementById('target-image').src = baseURL + stageData.img;
+            
+            // Handle Previous Button visibility
+            const prevBtn = document.getElementById('btn-prev');
+            if (currentStageIndex === 0) {
+                prevBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+            }
+
+            resetTicks();
+        }
+
+        function addTick(index) {
+            // Only allow clicking the next available grey tick
+            if (index === currentTicks) {
+                const ticks = document.querySelectorAll('.tick');
+                ticks[index].classList.add('active');
+                currentTicks++;
+
+                // If 3 ticks collected
+                if (currentTicks === 3) {
+                    setTimeout(() => {
+                        handleLevelComplete();
+                    }, 500);
+                }
+            }
+        }
+
+        function resetTicks() {
+            currentTicks = 0;
+            const ticks = document.querySelectorAll('.tick');
+            ticks.forEach(tick => tick.classList.remove('active'));
+        }
+
+        function handleLevelComplete() {
+            if (currentStageIndex < 4) {
+                // Move to next stage
+                currentStageIndex++;
+                updateStageView();
+            } else {
+                // Word fully completed
+                alert("太叻啦！完成所有難度！");
+                completedWords[currentWordIndex] = true;
+                goHome();
+            }
+        }
+
+        function prevStage() {
+            if (currentStageIndex > 0) {
+                currentStageIndex--;
+                updateStageView();
+            }
+        }
+
+        // Web Speech API for TTS
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Cancel previous speech
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-HK'; // Cantonese
+                utterance.rate = 0.8; // Slightly slower for kids
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("你的瀏覽器不支援語音功能。");
+            }
+        }
+
+        function playAudio() {
+            const text = data[currentWordIndex].stages[currentStageIndex].text;
+            speak(text);
+        }
+
+        function playCue() {
+            speak("記得要噴多啲氣");
+        }
+
+        // Initialize application on load
+        window.onload = initHome;
+    </script>
+</body>
+</html>
